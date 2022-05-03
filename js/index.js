@@ -15,27 +15,28 @@ var tirada = false;
 var audio = new Audio('./mp3/premio.mp3');
 
 function newGame() {
+    error = '';
+    mensaje = '';
+    premio = 0;
+    cantidad = document.getElementById("cantidad").value;
+    apuesta = document.getElementById('bet').value;
+    document.getElementById("cantidad").style = "#cantidad{border:3px solid navy;}";
+    document.getElementById("win").value = premio;
+    document.getElementById("mensaje").innerHTML = ""+mensaje;
     if (!tirada) {
         tirada = true;
-        timeslep = false;    
         for (var i=0; i<=10; i++) {
             arrayFigures[i] = 0;
         }
-        cantidad = document.getElementById("cantidad").value;
-        apuesta = document.getElementById('bet').value;
-        document.getElementById("cantidad").style = "#cantidad{border:3px solid navy;}";
-        error = '';
-        mensaje = '';
-        premio = 0;
         if (cantidad == '') {
-            error += "<style>#errores {color: red;}#cantidad{border:3px solid red;}</styl#cantidad> La cantitat no està informada";
+            error += "<style>#errores {color: red;}#cantidad{border:3px solid red;}</style> La cantitat no està informada";
         }
         else if (!parseInt(cantidad)) {
             error += "<style>#errores {color: red;}#cantidad{border:3px solid red;}</style> La cantitat no és numèrica";
         }
         else if (parseInt(cantidad) < parseInt(apuesta)) {
             error +="<style>#errores {color:red;}#cantidad{border:3px solid red;}</style> La cantitat és inferior a l'aposta";
-        }
+        }   
         if (error == '') {
             cantidad -= apuesta;
             numberRand(1);
@@ -43,26 +44,26 @@ function newGame() {
             numberRand(3);
             premio = winMoney();
             premio *= apuesta;
-            cantidad += premio;
-            
-            document.getElementById("cantidad").value = cantidad;
+            cantidad += premio;   
         }
         if (premio > 0) {
             mensaje = "<style>#win{border:3px solid gold;} .scores, .controls{background-color: navy;} #win{color: #fefefe;}</style> Has guanyat "+premio+" c !!";
-            //
+        }
+        else {
+            document.getElementById("cantidad").value = cantidad;
         }
         document.getElementById("errores").innerHTML = ""+error;
-        now = new Date();
-        sec = now.getSeconds();
-
-        var yourwin = setInterval(yourWinner(), 2000);
+        yourfinnish();
     }
 }
-function yourWinner() {
-    tirada = false;
-    document.getElementById("win").value = premio;
-    document.getElementById("mensaje").innerHTML = ""+mensaje;
-    if (mensaje != "") audio.play();
+function yourfinnish() {
+    setTimeout(() =>{
+        document.getElementById("cantidad").value = cantidad;
+        document.getElementById("win").value = premio;
+        document.getElementById("mensaje").innerHTML = ""+mensaje;
+        if (mensaje != "") audio.play();
+        tirada = false;
+    },1100);
 }
 function numberRand(i) {
     n = Math.random();
@@ -73,7 +74,7 @@ function numberRand(i) {
     animate(i, number);
 }
 function winMoney() {
-    for (var i=0; i<=10; i++) {
+    for (var i=1; i<=10; i++) {
         if (arrayFigures[i] == 3){
             return arrayPremios[i];
         } 
@@ -82,7 +83,10 @@ function winMoney() {
         }
         else if (arrayFigures[i] == 1 && arrayFigures[10] == 2) {
             return arrayPremios[i];
-        } 
+        }
+        else if (arrayFigures[10] == 2 && arrayFigures[i]  == 1) {
+            return arrayPremios[i];
+        }
     }
     return 0;
 }
@@ -93,11 +97,11 @@ function animate(i, number) {
     var id = setInterval(frame, 5);
     function frame() {
         pos++;
-        if (pos%20 == 0 && pos<=120) {
+        if (pos%30 == 0 && pos<=180) {
             document.getElementById("reel"+i).innerHTML = "<img id='fig' src='./img/"+n+".png'></img>";
             n++;
             if(n>10) n=1;
         }
-        if (pos==120) clearInterval(id);     
+        if (pos==180) clearInterval(id);     
     }   
 }
